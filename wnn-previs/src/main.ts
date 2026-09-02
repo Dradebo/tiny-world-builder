@@ -118,7 +118,6 @@ function buildRoom() {
   root.clear(); selectable.clear(); transform.detach(); selected = null; objectCounter = 0;
   selectionLabel.textContent = 'Nothing selected';
 
-  // Small retail unit + threshold + paved spillover. Only what the cameras need.
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(11,9), mat('#5a5147'));
   floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; root.add(floor);
   box('shop-back',[6.8,3.2,.12],[0,1.6,-3.0],'#896e53');
@@ -126,7 +125,6 @@ function buildRoom() {
   box('shop-right',[.12,3.2,4.0],[3.4,1.6,-1.0],'#8b7056');
   box('threshold',[7.0,.18,2.0],[0,.09,1.0],'#7b7065');
 
-  // Shop counter and shelves remain visible: commerce first.
   box('counter',[2.8,1.0,.65],[-2.0,.5,-2.25],'#4d3828',true);
   for (let r=0;r<3;r++) box(`shelf-${r+1}`,[2.9,.08,.35],[-1.7,1.15+r*.55,-2.82],'#423329');
   for (let i=0;i<12;i++) {
@@ -134,12 +132,10 @@ function buildRoom() {
     b.rotation.z=((i%5)-2)*.015;
   }
 
-  // Security grille / open-front cue.
   for (const x of [-3.15,3.15]) {
-    for (let i=0;i<4;i++) box(`grille-${x}-${i}`,[.035,2.5,.035],[x,.1+1.25,-1.6+i*.4],'#383838');
+    for (let i=0;i<4;i++) box(`grille-${x}-${i}`,[.035,2.5,.035],[x,1.35,-1.6+i*.4],'#383838');
   }
 
-  // Found seating mix: wooden table, mixed chairs, stacked plastic seats, cleaning residue.
   box('table',[2.3,.12,1.05],[0,.72,.25],'#8b5b2f',true);
   box('table-leg-a',[.12,1.4,.12],[-.75,.35,.25],'#6d4527');
   box('table-leg-b',[.12,1.4,.12],[.75,.35,.25],'#6d4527');
@@ -152,7 +148,6 @@ function buildRoom() {
   const broomHead=box('broom-head',[.65,.08,.16],[2.72,.08,1.25],'#3d6d42'); broomHead.rotation.y=.2;
   box('bucket',[.42,.48,.42],[2.0,.24,2.0],'#3b7850');
 
-  // WNN layer: one CRT, not a studio makeover.
   box('crt',[1.35,.9,.32],[2.45,1.7,-2.68],'#252321',true);
   const screen = box('crt-screen',[1.0,.58,.03],[2.45,1.7,-2.50],'#6b5f46');
   screen.material = new THREE.MeshStandardMaterial({color:'#756b50',emissive:'#39311f',emissiveIntensity:.35});
@@ -229,7 +224,7 @@ document.querySelectorAll<HTMLButtonElement>('[data-transform]').forEach(button=
 
 function snapshot(){return {camera:activeCamera,light:activeLight,aspect:activeAspect,objects:Array.from(selectable).map(obj=>({id:obj.userData.instanceId,name:obj.name,position:obj.position.toArray(),rotation:[obj.rotation.x,obj.rotation.y,obj.rotation.z],scale:obj.scale.toArray()}))};}
 function saveScene(){localStorage.setItem('wnn-previs-v0',JSON.stringify(snapshot()));selectionLabel.textContent='Saved in this browser';}
-function loadScene(){const raw=localStorage.getItem('wnn-previs-v0');if(!raw)return;const data=JSON.parse(raw);for(const state of data.objects||[]){const obj=Array.from(selectable).find(x=>x.userData.instanceId===state.id||x.name===state.name);if(!obj)continue;obj.position.fromArray(state.position);obj.rotation.set(...state.rotation);obj.scale.fromArray(state.scale);}setLighting(data.light||'NORMAL');setAspect(data.aspect||'16:9');setCamera(data.camera||'MASTER',false);selectionLabel.textContent='Scene loaded';}
+function loadScene(){const raw=localStorage.getItem('wnn-previs-v0');if(!raw)return;const data=JSON.parse(raw);for(const state of data.objects||[]){const obj=Array.from(selectable).find(x=>x.userData.instanceId===state.id||x.name===state.name);if(!obj)continue;obj.position.fromArray(state.position);obj.rotation.set(state.rotation[0],state.rotation[1],state.rotation[2]);obj.scale.fromArray(state.scale);}setLighting(data.light||'NORMAL');setAspect(data.aspect||'16:9');setCamera(data.camera||'MASTER',false);selectionLabel.textContent='Scene loaded';}
 
 document.querySelector('#saveScene')?.addEventListener('click',saveScene);
 document.querySelector('#loadScene')?.addEventListener('click',loadScene);
