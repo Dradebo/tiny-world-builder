@@ -1,0 +1,22 @@
+html, body, #app { margin: 0; width: 100%; height: 100%; }
+body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; background:#171412; color:#f3eadf; overflow:hidden; }
+#app { display:grid; grid-template-columns: 320px 1fr; }
+.panel { padding:20px; background:#211b18; border-right:1px solid #4a3b33; display:flex; flex-direction:column; gap:22px; overflow:auto; }
+.eyebrow { margin:0 0 6px; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:#c8a98f; }
+h1 { margin:0; font-size:22px; line-height:1.18; }
+h2 { margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:#c8a98f; }
+section { border-top:1px solid #3c302a; padding-top:14px; }
+button, .fileButton { background:#312720; color:#f3eadf; border:1px solid #5b493d; border-radius:8px; padding:9px 10px; cursor:pointer; font:inherit; }
+button:hover, .fileButton:hover, button.active { background:#49382d; border-color:#886b58; }
+.row { display:flex; gap:8px; flex-wrap:wrap; }
+section > button { width:100%; margin-bottom:8px; }
+.fileButton { display:inline-block; width:calc(100% - 22px); text-align:center; }
+.fileButton input { display:none; }
+#selection, .hint, li { font-size:12px; color:#cdbeb2; }
+ul { padding-left:18px; margin:8px 0 0; }
+#viewport { position:relative; min-width:0; min-height:0; }
+#viewport canvas { display:block; width:100%; height:100%; }
+@media (max-width: 800px) {
+  #app { grid-template-columns:1fr; grid-template-rows:auto 1fr; }
+  .panel { max-height:38vh; border-right:0; border-bottom:1px solid #4a3b33; }
+}

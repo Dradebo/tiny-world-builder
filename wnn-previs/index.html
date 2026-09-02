@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WNN Previs</title>
+  </head>
+  <body>
+    <div id="app">
+      <aside class="panel">
+        <div>
+          <p class="eyebrow">WNN / PREVIS v0</p>
+          <h1>Walk into shoot day with the show already directed.</h1>
+        </div>
+
+        <section>
+          <h2>Scene</h2>
+          <button id="resetScene">Reset WNN room</button>
+          <button id="saveScene">Save scene</button>
+          <button id="loadScene">Load scene</button>
+        </section>
+
+        <section>
+          <h2>Transform</h2>
+          <div class="row">
+            <button data-transform="translate" class="active">Move</button>
+            <button data-transform="rotate">Rotate</button>
+            <button data-transform="scale">Scale</button>
+          </div>
+          <p id="selection">Nothing selected</p>
+        </section>
+
+        <section>
+          <h2>Assets</h2>
+          <label class="fileButton">
+            Import GLB/GLTF
+            <input id="modelInput" type="file" accept=".glb,.gltf" />
+          </label>
+          <p class="hint">Imported models become selectable production props.</p>
+        </section>
+
+        <section>
+          <h2>Acceptance</h2>
+          <ul>
+            <li>room renders</li>
+            <li>props selectable</li>
+            <li>move / rotate / scale</li>
+            <li>GLB import</li>
+            <li>browser save / load</li>
+          </ul>
+        </section>
+      </aside>
+      <main id="viewport"></main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
