@@ -13,7 +13,10 @@ export type WnnCharacter = {
   role: 'host' | 'cohost' | 'witness' | 'regular' | 'proprietor';
 };
 
+type TableThing = { object: THREE.Object3D; base: THREE.Vector3; phase: number; amount: number };
+
 const people: WnnCharacter[] = [];
+const tableThings: TableThing[] = [];
 let editorialPulse = 0;
 
 const skin = new THREE.MeshStandardMaterial({ color: '#5b3828', roughness: .92 });
@@ -60,7 +63,7 @@ export function createCharacter(opts: {name:string; role:WnnCharacter['role']; x
   foreL.rotation.z=-.5; foreR.rotation.z=.5;
 
   for (const side of [-1,1]) {
-    const thigh=limb(.48,'#302b27'); thigh.position.set(side*.16,opts.seated===false?-.28:-.28,0); torso.add(thigh);
+    const thigh=limb(.48,'#302b27'); thigh.position.set(side*.16,-.28,0); torso.add(thigh);
     thigh.rotation.x=opts.seated===false?0:-1.2;
     const shin=limb(.47,'#332f2b'); shin.position.y=-.45; thigh.add(shin); shin.rotation.x=opts.seated===false?0:1.35;
     const shoe=primitive(new THREE.BoxGeometry(.17,.1,.3),dark); shoe.position.set(0,-.49,.08); shin.add(shoe);
@@ -73,8 +76,7 @@ export function createCharacter(opts: {name:string; role:WnnCharacter['role']; x
   root.userData.wnnCharacter=character; people.push(character); return character;
 }
 
-export function clearAmbientCharacters(){ people.splice(0,people.length); }
-
+export function clearAmbientCharacters(){ people.splice(0,people.length); tableThings.splice(0,tableThings.length); }
 export function triggerEditorialBeat(strength=1){ editorialPulse=Math.max(editorialPulse,strength); }
 
 export function updateAmbientLife(timeMs:number){
@@ -83,25 +85,38 @@ export function updateAmbientLife(timeMs:number){
   for(let i=0;i<people.length;i++){
     const p=people[i]; const q=t*.34+p.phase;
     const slow=Math.sin(q)*.018; const glance=Math.sin(q*.63+i)*.10;
-    // low-amplitude unsynchronised motion: nobody is frozen, nobody is "performing idle animation".
-    p.torso.rotation.z=slow; p.torso.rotation.x=Math.sin(q*.41)*.025 - editorialPulse*(p.role==='witness'?.05:.018);
+    p.torso.rotation.z=slow;
+    p.torso.rotation.x=Math.sin(q*.41)*.025 - editorialPulse*(p.role==='witness'?.05:.018);
     p.head.rotation.y=glance + editorialPulse*(p.role==='witness'?-.42:(i%2?.12:-.08));
     p.head.rotation.z=Math.sin(q*.51)*.025;
     p.leftArm.rotation.z=.18 + Math.sin(q*.46)*.035;
     p.rightArm.rotation.z=-.18 + Math.sin(q*.55+1.2)*.04;
 
-    // Sparse drink/cigarette cycles. Different phases prevent tavern-NPC synchronisation.
+    if(p.role==='proprietor'){
+      p.root.position.x += Math.sin(q*.11)*.00045;
+      p.root.rotation.y += Math.sin(q*.13)*.00035;
+    }
+    if(p.role==='regular'){
+      p.torso.rotation.y=Math.sin(q*.31)*.035;
+    }
+
     if(p.bottle){ const sip=Math.max(0,Math.sin(q*.19-1.25)); const lift=sip>0.82?(sip-.82)/.18:0; p.rightArm.rotation.x=-lift*.82; p.bottle.rotation.z=lift*.35; }
     if(p.cigarette){ const drag=Math.max(0,Math.sin(q*.145+2.1)); const lift=drag>0.9?(drag-.9)/.1:0; p.leftArm.rotation.x=-lift*.6; }
+  }
+
+  for(let i=0;i<tableThings.length;i++){
+    const thing=tableThings[i]; const q=t*.11+thing.phase;
+    // tiny long-period drift: caps, bottles, phone and lighter never feel perfectly reset.
+    thing.object.position.x=thing.base.x + Math.sin(q)*thing.amount;
+    thing.object.position.z=thing.base.z + Math.sin(q*.73+1.7)*thing.amount*.65;
+    thing.object.rotation.y += Math.sin(q*.31+i)*.00012;
   }
 }
 
 export function makeTableLife(parent:THREE.Group){
-  const objects:THREE.Object3D[]=[];
   const positions:[number,number,number][]=[[-.48,.79,.06],[.38,.79,.02],[.05,.79,.45]];
-  positions.forEach((pos,i)=>{const b=beerBottle();b.position.set(...pos);b.rotation.y=i*.8;parent.add(b);objects.push(b);});
-  const lighter=primitive(new THREE.BoxGeometry(.055,.025,.13),new THREE.MeshStandardMaterial({color:'#b54b27',roughness:.7})); lighter.position.set(-.12,.755,-.06); lighter.rotation.y=.55; parent.add(lighter);objects.push(lighter);
-  const ashtray=primitive(new THREE.CylinderGeometry(.12,.12,.035,12),new THREE.MeshStandardMaterial({color:'#3e3b38',roughness:.75}));ashtray.position.set(.5,.76,.38);parent.add(ashtray);objects.push(ashtray);
-  const phone=primitive(new THREE.BoxGeometry(.16,.025,.3),dark);phone.position.set(-.45,.76,.4);phone.rotation.y=-.3;parent.add(phone);objects.push(phone);
-  return objects;
+  positions.forEach((pos,i)=>{const b=beerBottle();b.position.set(...pos);b.rotation.y=i*.8;parent.add(b);tableThings.push({object:b,base:b.position.clone(),phase:Math.random()*8,amount:.008+i*.003});});
+  const lighter=primitive(new THREE.BoxGeometry(.055,.025,.13),new THREE.MeshStandardMaterial({color:'#b54b27',roughness:.7})); lighter.position.set(-.12,.755,-.06); lighter.rotation.y=.55; parent.add(lighter); tableThings.push({object:lighter,base:lighter.position.clone(),phase:3.4,amount:.005});
+  const ashtray=primitive(new THREE.CylinderGeometry(.12,.12,.035,12),new THREE.MeshStandardMaterial({color:'#3e3b38',roughness:.75}));ashtray.position.set(.5,.76,.38);parent.add(ashtray);tableThings.push({object:ashtray,base:ashtray.position.clone(),phase:5.1,amount:.002});
+  const phone=primitive(new THREE.BoxGeometry(.16,.025,.3),dark);phone.position.set(-.45,.76,.4);phone.rotation.y=-.3;parent.add(phone);tableThings.push({object:phone,base:phone.position.clone(),phase:7.2,amount:.004});
 }
