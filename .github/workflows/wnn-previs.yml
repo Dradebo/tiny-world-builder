@@ -1,0 +1,30 @@
+name: WNN Previs
+
+on:
+  pull_request:
+    paths:
+      - 'wnn-previs/**'
+      - '.github/workflows/wnn-previs.yml'
+  push:
+    branches:
+      - 'feat/wnn-previs-spike'
+    paths:
+      - 'wnn-previs/**'
+      - '.github/workflows/wnn-previs.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: wnn-previs
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: wnn-previs/package.json
+      - run: npm install
+      - run: npm run typecheck
+      - run: npm run build
