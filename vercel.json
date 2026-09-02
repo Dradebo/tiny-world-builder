@@ -1,0 +1,4 @@
+{
+  "buildCommand": "cd wnn-previs && npm install && npm run build",
+  "outputDirectory": "wnn-previs/dist"
+}
