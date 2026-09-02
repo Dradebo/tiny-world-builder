@@ -26,28 +26,26 @@ const tableThings: TableThing[] = [];
 let editorialPulse = 0;
 let lastUpdate = performance.now();
 
-// Donors are intentionally treated as untrusted coordinate systems.
-// We measure each loaded model and normalize it into WNN metres instead of relying on source scale.
-const DONORS: Record<Role, { url: string; targetHeight: number }> = {
+const DONORS: Record<Role, { url: string; scale: number }> = {
   host: {
     url: 'https://raw.githubusercontent.com/schulerj89/vanta-city/main/public/assets/characters/animated-men/mack-long-sleeves.glb',
-    targetHeight: 1.76,
+    scale: .370,
   },
   cohost: {
     url: 'https://raw.githubusercontent.com/schulerj89/vanta-city/main/public/assets/characters/animated-men/nox-layered-shirt.glb',
-    targetHeight: 1.72,
+    scale: .368,
   },
   witness: {
     url: 'https://raw.githubusercontent.com/schulerj89/vanta-city/main/public/assets/characters/animated-men/raze-suit.glb',
-    targetHeight: 1.78,
+    scale: .369,
   },
   regular: {
     url: 'https://raw.githubusercontent.com/schulerj89/vanta-city/main/public/assets/characters/cc0-animated-cast/worker.glb',
-    targetHeight: 1.73,
+    scale: .98,
   },
   proprietor: {
     url: 'https://raw.githubusercontent.com/schulerj89/vanta-city/main/public/assets/characters/cc0-animated-cast/farmer.glb',
-    targetHeight: 1.70,
+    scale: .98,
   },
 };
 
@@ -91,22 +89,6 @@ function findNamedBone(root: THREE.Object3D, names: RegExp[]) {
   return match;
 }
 
-function normalizeModel(model: THREE.Object3D, targetHeight: number) {
-  model.scale.setScalar(1);
-  model.position.set(0,0,0);
-  model.updateMatrixWorld(true);
-  const rawBox = new THREE.Box3().setFromObject(model);
-  const rawHeight = rawBox.max.y - rawBox.min.y;
-  if (Number.isFinite(rawHeight) && rawHeight > .001) {
-    model.scale.setScalar(targetHeight / rawHeight);
-  }
-  model.updateMatrixWorld(true);
-  const scaledBox = new THREE.Box3().setFromObject(model);
-  // Ground the donor visually. WNN root position remains the authoritative seat/world anchor.
-  model.position.y -= scaledBox.min.y;
-  model.updateMatrixWorld(true);
-}
-
 function mountBottle(character: WnnCharacter) {
   if (!character.wristR) return;
   const bottle=beerBottle(.58);
@@ -131,8 +113,8 @@ export function createCharacter(opts: {name:string; role:Role; x:number; z:numbe
   root.position.set(opts.x,0,opts.z);
   root.rotation.y = opts.rotY ?? 0;
 
-  const placeholder = primitive(new THREE.BoxGeometry(.34,1.15,.22), new THREE.MeshStandardMaterial({color:opts.shirt,roughness:.95}));
-  placeholder.position.y=.575;
+  const placeholder = primitive(new THREE.BoxGeometry(.38,1.15,.24), new THREE.MeshStandardMaterial({color:opts.shirt,roughness:.95}));
+  placeholder.position.y=.58;
   root.add(placeholder);
 
   const character: WnnCharacter = {
@@ -150,11 +132,17 @@ export function createCharacter(opts: {name:string; role:Role; x:number; z:numbe
     root.remove(placeholder);
     const model = gltf.scene;
     model.name = `${opts.name}-donor`;
+    model.scale.setScalar(donor.scale);
     model.rotation.y = Math.PI;
     model.traverse((child:any)=>{
       if(child.isMesh){ child.castShadow=true; child.receiveShadow=true; }
     });
     root.add(model);
+
+    character.wristR=findNamedBone(model,[/^WristR$/i,/HandR$/i,/RightHand/i]);
+    character.wristL=findNamedBone(model,[/^WristL$/i,/HandL$/i,/LeftHand/i]);
+    if(opts.bottle) mountBottle(character);
+    if(opts.cigarette) mountCigarette(character);
 
     const mixer = new THREE.AnimationMixer(model);
     character.mixer = mixer;
@@ -169,18 +157,8 @@ export function createCharacter(opts: {name:string; role:Role; x:number; z:numbe
       action.setLoop(THREE.LoopRepeat,Infinity);
       action.play();
       action.time=Math.random()*Math.max(.01,base.duration);
-      mixer.update(0);
       character.baseAction=action;
     }
-
-    // Normalize only after the base pose is active; animated bounds are what matter on camera.
-    normalizeModel(model, donor.targetHeight);
-
-    character.wristR=findNamedBone(model,[/^WristR$/i,/HandR$/i,/RightHand/i]);
-    character.wristL=findNamedBone(model,[/^WristL$/i,/HandL$/i,/LeftHand/i]);
-    if(opts.bottle) mountBottle(character);
-    if(opts.cigarette) mountCigarette(character);
-
     if(clap){
       const gesture=mixer.clipAction(clap);
       gesture.setLoop(THREE.LoopOnce,1);
@@ -221,30 +199,30 @@ export function updateAmbientLife(timeMs:number){
     p.mixer?.update(delta);
     const q=timeMs*.00032+p.phase;
 
-    // Drift stays tiny; the authored animation owns the body pose.
-    p.root.rotation.z=Math.sin(q*.41+i)*.004;
+    p.root.rotation.z=Math.sin(q*.41+i)*.006;
+    p.root.rotation.y += Math.sin(q*.17+i)*.00012;
     if(editorialPulse>.08){
-      const bias=p.role==='witness' ? -.13 : (i%2?.035:-.025);
-      p.root.rotation.y += bias*editorialPulse*.012;
+      const bias=p.role==='witness' ? -.20 : (i%2?.055:-.035);
+      p.root.rotation.y += bias*editorialPulse*.018;
     }
 
     if(p.wristR && p.bottle){
       const d=Math.sin(timeMs*.00018+p.drinkPhase);
-      const lift=d>.92?(d-.92)/.08:0;
-      p.wristR.rotation.x += lift*.28;
-      p.wristR.rotation.z -= lift*.10;
-      p.bottle.rotation.z=.02+lift*.38;
+      const lift=d>.90?(d-.90)/.10:0;
+      p.wristR.rotation.x += lift*.42;
+      p.wristR.rotation.z -= lift*.16;
+      p.bottle.rotation.z=.02+lift*.48;
     }
     if(p.wristL && p.cigarette){
       const s=Math.sin(timeMs*.00014+p.smokePhase);
-      const lift=s>.95?(s-.95)/.05:0;
-      p.wristL.rotation.x += lift*.22;
-      p.wristL.rotation.y -= lift*.12;
+      const lift=s>.93?(s-.93)/.07:0;
+      p.wristL.rotation.x += lift*.32;
+      p.wristL.rotation.y -= lift*.18;
     }
 
     if(timeMs>p.nextGestureAt && p.gestureAction && p.baseAction && editorialPulse<.1){
-      p.nextGestureAt=timeMs+16000+Math.random()*24000;
-      if(Math.random()>.78){
+      p.nextGestureAt=timeMs+14000+Math.random()*22000;
+      if(Math.random()>.72){
         p.gestureAction.reset().fadeIn(.15).play();
         p.baseAction.fadeOut(.15);
         window.setTimeout(()=>{ p.gestureAction?.fadeOut(.2); p.baseAction?.reset().fadeIn(.2).play(); },1200);
