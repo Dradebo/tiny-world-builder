@@ -105,9 +105,11 @@ function buildRoom() {
   box('crt',[1.35,.9,.32],[2.45,1.7,-2.68],'#252321',true);
   const screen = box('crt-screen',[1.0,.58,.03],[2.45,1.7,-2.50],'#6b5f46'); screen.material = new THREE.MeshStandardMaterial({color:'#756b50',emissive:'#39311f',emissiveIntensity:.35});
 
-  const host=createCharacter({name:'host',role:'host',x:-1.05,z:.2,rotY:.05,shirt:'#73503d',seated:true,bottle:true,cigarette:false});
-  const cohost=createCharacter({name:'cohost',role:'cohost',x:1.05,z:.2,rotY:-.06,shirt:'#475b4a',seated:true,bottle:true,cigarette:true});
-  const witness=createCharacter({name:'witness',role:'witness',x:2.25,z:-1.05,rotY:-1.05,shirt:'#5a544c',seated:true,bottle:false,cigarette:true});
+  // Cast is anchored to the actual modeled chairs, not arbitrary world coordinates.
+  // The third chair is opposite the table and becomes the witness position.
+  const host=createCharacter({name:'host',role:'host',x:-1.22,z:.78,rotY:Math.PI+.08,shirt:'#73503d',seated:true,bottle:true,cigarette:false});
+  const cohost=createCharacter({name:'cohost',role:'cohost',x:1.24,z:.72,rotY:Math.PI-.10,shirt:'#475b4a',seated:true,bottle:true,cigarette:true});
+  const witness=createCharacter({name:'witness',role:'witness',x:.18,z:1.85,rotY:0,shirt:'#5a544c',seated:true,bottle:false,cigarette:true});
   root.add(host.root,cohost.root,witness.root); register(host.root,'character'); register(cohost.root,'character'); register(witness.root,'character');
 
   setCamera(activeCamera, false); setLighting(activeLight);
@@ -154,9 +156,8 @@ window.addEventListener('resize',resize);
 
 buildRoom(); resize(); setAspect('16:9');
 function tick(){
-  const now=performance.now();
-  updateAmbientLife(now);
-  if(transition){const t=Math.min(1,(now-transition.start)/transition.duration);const e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;camera.position.lerpVectors(transition.fromPos,transition.toPos,e);orbit.target.lerpVectors(transition.fromTarget,transition.toTarget,e);if(t>=1)transition=null;}
+  if(transition){const t=Math.min(1,(performance.now()-transition.start)/transition.duration);const e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;camera.position.lerpVectors(transition.fromPos,transition.toPos,e);orbit.target.lerpVectors(transition.fromTarget,transition.toTarget,e);if(t>=1)transition=null;}
+  updateAmbientLife(performance.now());
   orbit.update(); renderer.render(scene,camera); requestAnimationFrame(tick);
 }
 tick();
