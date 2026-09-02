@@ -11,17 +11,40 @@
         <div>
           <p class="eyebrow">WNN / PREVIS v0</p>
           <h1>Walk into shoot day with the show already directed.</h1>
+          <p class="hint">A shopfront gathering point, not a designed bar.</p>
         </div>
 
         <section>
-          <h2>Scene</h2>
-          <button id="resetScene">Reset WNN room</button>
-          <button id="saveScene">Save scene</button>
-          <button id="loadScene">Load scene</button>
+          <h2>Camera</h2>
+          <div id="cameraButtons" class="buttonGrid"></div>
         </section>
 
         <section>
-          <h2>Transform</h2>
+          <h2>Lighting</h2>
+          <div class="row">
+            <button data-light="NORMAL" class="active">Normal</button>
+            <button data-light="LONG_ONE">Long one</button>
+            <button data-light="WITNESS_SHOCK">Witness shock</button>
+          </div>
+        </section>
+
+        <section>
+          <h2>Frame</h2>
+          <div class="row">
+            <button data-aspect="16:9" class="active">16:9</button>
+            <button data-aspect="9:16">9:16</button>
+          </div>
+        </section>
+
+        <section>
+          <h2>Scene</h2>
+          <button id="resetScene">Reset</button>
+          <button id="saveScene">Save</button>
+          <button id="loadScene">Load</button>
+        </section>
+
+        <section>
+          <h2>Edit props</h2>
           <div class="row">
             <button data-transform="translate" class="active">Move</button>
             <button data-transform="rotate">Rotate</button>
@@ -31,26 +54,21 @@
         </section>
 
         <section>
-          <h2>Assets</h2>
+          <h2>Optional prop</h2>
           <label class="fileButton">
-            Import GLB/GLTF
-            <input id="modelInput" type="file" accept=".glb,.gltf" />
+            Import GLB
+            <input id="modelInput" type="file" accept=".glb" />
           </label>
-          <p class="hint">Imported models become selectable production props.</p>
-        </section>
-
-        <section>
-          <h2>Acceptance</h2>
-          <ul>
-            <li>room renders</li>
-            <li>props selectable</li>
-            <li>move / rotate / scale</li>
-            <li>GLB import</li>
-            <li>browser save / load</li>
-          </ul>
         </section>
       </aside>
-      <main id="viewport"></main>
+
+      <main id="viewport">
+        <div id="frameGuide" class="frameGuide landscape"></div>
+        <div class="shotBug">
+          <span id="shotName">MASTER</span>
+          <span id="lightName">NORMAL</span>
+        </div>
+      </main>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
