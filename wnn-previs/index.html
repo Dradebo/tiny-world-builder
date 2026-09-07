@@ -3,15 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WNN Previs</title>
+    <title>WNN Previs — Scene Truth Rescue</title>
   </head>
   <body>
     <div id="app">
       <aside class="panel">
         <div>
-          <p class="eyebrow">WNN / PREVIS v0</p>
-          <h1>Walk into shoot day with the show already directed.</h1>
-          <p class="hint">A shopfront gathering point, not a designed bar.</p>
+          <p class="eyebrow">WNN / PREVIS · SCENE TRUTH</p>
+          <h1>Prove the place before directing the show.</h1>
+          <p class="hint">Shop first. Gathering point second. WNN set third.</p>
         </div>
 
         <section>
@@ -22,7 +22,7 @@
         <section>
           <h2>Lighting</h2>
           <div class="row">
-            <button data-light="NORMAL" class="active">Normal</button>
+            <button data-light="SOURCE-DAY" class="active">Source day</button>
             <button data-light="LONG_ONE">Long one</button>
             <button data-light="WITNESS_SHOCK">Witness shock</button>
           </div>
@@ -54,7 +54,8 @@
         </section>
 
         <section>
-          <h2>Optional prop</h2>
+          <h2>Quarantined extras</h2>
+          <p class="hint">External GLBs are opt-in until scale, pose and rig compatibility are proven.</p>
           <label class="fileButton">
             Import GLB
             <input id="modelInput" type="file" accept=".glb" />
@@ -65,11 +66,11 @@
       <main id="viewport">
         <div id="frameGuide" class="frameGuide landscape"></div>
         <div class="shotBug">
-          <span id="shotName">MASTER</span>
-          <span id="lightName">NORMAL</span>
+          <span id="shotName">REF-SEATED</span>
+          <span id="lightName">SOURCE-DAY</span>
         </div>
       </main>
     </div>
-    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/rescueMain.ts"></script>
   </body>
 </html>
