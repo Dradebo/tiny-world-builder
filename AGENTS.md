@@ -25,6 +25,20 @@ Guidance for AI coding agents working in this repo. Read this before touching
   - `.codex/skills/tinyworld-visual-qa` — browser checks and visual QA.
   - `.codex/skills/tinyworld-render-performance` — post-processing, renderer, shadows, and GPU budget.
   - `.codex/skills/tinyworld-lowpoly-world-prompt` — model prompting for coherent low-poly worlds.
+  - `.codex/skills/tinyworld-visual-compiler` — translate nontechnical aesthetic/cultural/spatial/cinematic ore into an explicit Scene IR, Three.js primitive plan, and visual invariants before implementation.
+
+### Mandatory visual-compilation gate
+
+Any request that contains aesthetic judgment, reference language, cultural description,
+spatial feeling, camera feeling, atmosphere, "make it feel like...", "too clean",
+"too generic", "more alive", "less game-like", or similar visual ore must route through
+`tinyworld-visual-compiler` before code changes.
+
+Do not make major unsignaled aesthetic decisions while coding. Compile the ore first,
+then implement the resulting Scene IR from the cheapest viable layer: composition,
+parameters, primitive recipe, object kind, renderer, and only then external authored assets.
+
+The user is not required to know 3D terminology. Natural language is valid source material.
 
 ## House style
 
@@ -118,3 +132,4 @@ or you will desync intent from rendering.
 - [ ] Placing/erasing a fence updates its neighbors' geometry.
 - [ ] Clusters of houses still render as L/T/+/square where appropriate.
 - [ ] Smoke spawns from house chimneys after they finish landing.
+- [ ] If the change was aesthetic, its Scene IR invariants were checked visually.
