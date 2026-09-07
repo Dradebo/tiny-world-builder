@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WNN Previs — Scene Truth Rescue</title>
+  </head>
+  <body>
+    <div id="app">
+      <aside class="panel">
+        <div>
+          <p class="eyebrow">WNN / PREVIS · SCENE TRUTH</p>
+          <h1>Prove the place before directing the show.</h1>
+          <p class="hint">Shop first. Gathering point second. WNN set third.</p>
+        </div>
+
+        <section>
+          <h2>Camera</h2>
+          <div id="cameraButtons" class="buttonGrid"></div>
+        </section>
+
+        <section>
+          <h2>Lighting</h2>
+          <div class="row">
+            <button data-light="SOURCE-DAY" class="active">Source day</button>
+            <button data-light="LONG_ONE">Long one</button>
+            <button data-light="WITNESS_SHOCK">Witness shock</button>
+          </div>
+        </section>
+
+        <section>
+          <h2>Frame</h2>
+          <div class="row">
+            <button data-aspect="16:9" class="active">16:9</button>
+            <button data-aspect="9:16">9:16</button>
+          </div>
+        </section>
+
+        <section>
+          <h2>Scene</h2>
+          <button id="resetScene">Reset</button>
+          <button id="saveScene">Save</button>
+          <button id="loadScene">Load</button>
+        </section>
+
+        <section>
+          <h2>Edit props</h2>
+          <div class="row">
+            <button data-transform="translate" class="active">Move</button>
+            <button data-transform="rotate">Rotate</button>
+            <button data-transform="scale">Scale</button>
+          </div>
+          <p id="selection">Nothing selected</p>
+        </section>
+
+        <section>
+          <h2>Quarantined extras</h2>
+          <p class="hint">External GLBs are opt-in until scale, pose and rig compatibility are proven.</p>
+          <label class="fileButton">
+            Import GLB
+            <input id="modelInput" type="file" accept=".glb" />
+          </label>
+        </section>
+      </aside>
+
+      <main id="viewport">
+        <div id="frameGuide" class="frameGuide landscape"></div>
+        <div class="shotBug">
+          <span id="shotName">REF-SEATED</span>
+          <span id="lightName">SOURCE-DAY</span>
+        </div>
+      </main>
+    </div>
+    <script type="module" src="/src/rescueMain.ts"></script>
+  </body>
+</html>
