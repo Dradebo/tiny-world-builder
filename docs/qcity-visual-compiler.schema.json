@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "qcity-visual-compiler-v0",
+  "title": "Q-City Visual Compiler Scene IR v0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scene_thesis",
+    "must_read_as",
+    "must_not_read_as",
+    "composition",
+    "shape_language",
+    "spatial",
+    "material_color",
+    "lighting",
+    "camera",
+    "motion",
+    "implementation",
+    "qa"
+  ],
+  "properties": {
+    "scene_thesis": { "type": "string", "minLength": 1 },
+    "must_read_as": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "must_not_read_as": { "type": "array", "items": { "type": "string" } },
+    "story_evidence": { "type": "array", "items": { "type": "string" } },
+    "composition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["focal_hierarchy", "occupancy", "negative_space", "asymmetry", "depth_layers", "density_gradient", "path_flow"],
+      "properties": {
+        "focal_hierarchy": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "occupancy": { "type": "number", "minimum": 0, "maximum": 1 },
+        "negative_space": { "enum": ["low", "medium", "high"] },
+        "asymmetry": { "type": "number", "minimum": 0, "maximum": 1 },
+        "depth_layers": { "type": "integer", "minimum": 1, "maximum": 4 },
+        "density_gradient": { "type": "string" },
+        "path_flow": { "type": "string" }
+      }
+    },
+    "shape_language": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dominant_shapes", "proportion_bias", "edge_character", "silhouette_variance", "repetition", "variation_amplitude"],
+      "properties": {
+        "dominant_shapes": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "proportion_bias": { "enum": ["squat", "balanced", "tall", "wide", "thin", "chunky", "mixed"] },
+        "edge_character": { "enum": ["sharp", "small-bevel", "rounded", "irregular", "mixed"] },
+        "silhouette_variance": { "type": "number", "minimum": 0, "maximum": 1 },
+        "repetition": { "enum": ["regular", "rhythmic", "clustered", "sparse", "mixed"] },
+        "variation_amplitude": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "spatial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["human_scale_anchor", "hierarchy", "compression", "verticality", "adjacency_rules"],
+      "properties": {
+        "human_scale_anchor": { "type": "string" },
+        "hierarchy": { "type": "array", "items": { "type": "string" } },
+        "compression": { "enum": ["open", "moderate", "compressed"] },
+        "verticality": { "enum": ["flat", "layered", "tall", "mixed"] },
+        "adjacency_rules": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "material_color": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["palette_roles", "saturation", "temperature", "value_separation", "surface_variance", "accent_budget"],
+      "properties": {
+        "palette_roles": { "type": "object", "additionalProperties": { "type": "string" } },
+        "saturation": { "enum": ["muted", "balanced", "vivid"] },
+        "temperature": { "enum": ["cool", "neutral", "warm", "mixed"] },
+        "value_separation": { "enum": ["low", "medium", "high"] },
+        "surface_variance": { "enum": ["pristine", "subtle", "accumulated", "distressed"] },
+        "accent_budget": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "lighting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key_direction", "key_softness", "fill_floor", "contrast", "atmosphere", "post"],
+      "properties": {
+        "key_direction": { "type": "string" },
+        "key_softness": { "enum": ["hard", "balanced", "soft"] },
+        "fill_floor": { "enum": ["dark", "readable", "bright"] },
+        "contrast": { "enum": ["low", "medium", "high"] },
+        "atmosphere": { "type": "string" },
+        "post": { "type": "object", "additionalProperties": { "type": ["number", "string", "boolean"] } }
+      }
+    },
+    "camera": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["view_job", "projection", "elevation", "lens_feel", "target", "occlusion", "framing_precision"],
+      "properties": {
+        "view_job": { "type": "string" },
+        "projection": { "enum": ["ortho", "soft-perspective", "perspective"] },
+        "elevation": { "enum": ["low", "eye", "medium", "high", "aerial"] },
+        "lens_feel": { "enum": ["wide", "normal", "telephoto-miniature"] },
+        "target": { "type": "string" },
+        "occlusion": { "enum": ["none", "low", "medium", "high"] },
+        "framing_precision": { "enum": ["composed", "slightly-imperfect", "deliberately-unstable"] }
+      }
+    },
+    "motion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amplitude", "synchrony", "causal_motion", "ambient_vs_event"],
+      "properties": {
+        "amplitude": { "enum": ["none", "subtle", "medium", "expressive"] },
+        "synchrony": { "enum": ["synchronized", "staggered", "unsynchronized", "mixed"] },
+        "causal_motion": { "type": "array", "items": { "type": "string" } },
+        "ambient_vs_event": { "type": "string" }
+      }
+    },
+    "implementation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reuse_existing", "modify_factories", "new_primitive_recipes", "new_object_kinds", "renderer_changes", "forbidden_shortcuts"],
+      "properties": {
+        "reuse_existing": { "type": "array", "items": { "type": "string" } },
+        "modify_factories": { "type": "array", "items": { "type": "string" } },
+        "new_primitive_recipes": { "type": "array", "items": { "type": "string" } },
+        "new_object_kinds": { "type": "array", "items": { "type": "string" } },
+        "renderer_changes": { "type": "array", "items": { "type": "string" } },
+        "forbidden_shortcuts": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "qa": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["invariants", "failure_signatures"],
+      "properties": {
+        "invariants": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "failure_signatures": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}
